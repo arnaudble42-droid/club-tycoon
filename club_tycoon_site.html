@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Club Tycoon</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--pitch:#0f3322;--ink:#f2efe6;--mu:#9fb3a6;--gold:#e0b13a;--card:#16291f;--line:#264536;--g:#1f8a50}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Barlow,system-ui,sans-serif;color:var(--ink);
+  background:linear-gradient(180deg,#f7c27a 0%,#ef9a4a 18%,#8a6a4a 34%,#3f7a3c 48%,#2a6431 70%,#143d20 100%);min-height:100vh}
+body{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+.scr{display:none;max-width:520px;margin:0 auto;padding:20px 16px 48px}
+.scr.on{display:block}
+h1,h2{font-family:"Barlow Condensed",Barlow,sans-serif;font-weight:800;margin:0}
+.logo{text-align:center;margin:30px 0 4px;font-size:44px;line-height:.95;letter-spacing:.5px;color:var(--ink);text-shadow:0 3px 14px #0009}
+.logo span{color:var(--gold)}
+.tag{text-align:center;color:var(--ink);opacity:.9;margin:10px 0 26px;font-size:16px;text-shadow:0 1px 6px #000}
+.btn{display:block;width:100%;margin:10px 0;padding:16px 18px;border:0;border-radius:14px;background:#1a1a1a;color:#fff;font:800 16px Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-align:left;cursor:pointer;box-shadow:0 2px 10px #0006}
+.btn small{text-transform:none;letter-spacing:0;font-weight:400}
+.foot{text-align:center;margin-top:26px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#fff;opacity:.85;text-shadow:0 1px 4px #000}
+.btn small{display:block;margin-top:3px;font-weight:400;font-size:13px;color:var(--mu)}
+.btn.g{background:var(--g)}
+.btn.g small{color:#d7f3e2}
+.btn:disabled{opacity:.35;cursor:default}
+.btn:focus-visible,.tabs button:focus-visible,.back:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:12px 0}
+.card h3{margin:0 0 8px;font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:20px;color:var(--gold)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:15px}
+.row:last-child{border-bottom:0}
+.tabs{display:flex;gap:6px;margin:12px 0}
+.tabs button{flex:1;padding:10px 4px;border:1px solid var(--line);border-radius:10px;background:#0c1a12;color:var(--ink);font:600 14px Barlow,sans-serif;cursor:pointer}
+.tabs button.on{background:var(--g);border-color:var(--g)}
+.back{background:none;border:0;color:var(--ink);font:600 15px Barlow,sans-serif;padding:8px 0;cursor:pointer}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.meta{color:var(--mu);font-size:13px}
+.note{min-height:22px;text-align:center;color:var(--gold);margin:10px 0;font-size:15px}
+.pos{display:inline-block;width:38px;color:var(--mu);font-size:12px;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:7px 3px;text-align:center;border-bottom:1px solid var(--line)}
+th{color:var(--mu);font-weight:600;font-size:12px}
+td.l,th.l{text-align:left}
+tr.me td{color:var(--gold);font-weight:600}
+input{width:100%;padding:14px;margin:8px 0 14px;border:0;border-radius:12px;font:16px Barlow,sans-serif;background:var(--ink);color:#0c1a12}
+.mini{padding:7px 10px;border:0;border-radius:9px;background:var(--gold);color:#1a1405;font:700 13px Barlow,sans-serif;cursor:pointer;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
+<style>.ad{margin:22px auto 0;max-width:520px;min-height:60px}</style>
+</head>
+<body>
+
+<div id="menu" class="scr on">
+  <div class="logo">CLUB<br><span>TYCOON</span></div>
+  <p class="tag">Reprenez un club. Élevez une ville. Bâtissez une dynastie.</p>
+  <button class="btn g" id="bCont" onclick="cont()">Continuer<small id="contSub"></small></button>
+  <button class="btn" onclick="quick()">Démarrage rapide<small>Un club au hasard, carrière immédiate</small></button>
+  <button class="btn" onclick="go('new')">Nouvelle carrière<small>Choisissez votre club</small></button>
+  <button class="btn" onclick="go('load')">Charger une partie</button>
+  <button class="btn" onclick="go('set')">Réglages</button>
+  <div class="card" id="prof"></div>
+  <p class="foot">72 clubs · 12 divisions · hors ligne</p>
+  <div class="ad"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="1111111111" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script></div>
+</div>
+
+<div id="new" class="scr">
+  <button class="back" onclick="go('menu')">← Retour</button>
+  <h2 style="font-size:30px;margin-top:6px">Nouvelle carrière</h2>
+  <input id="mgr" placeholder="Votre nom de manager" maxlength="24" aria-label="Nom du manager">
+  <p class="meta">Choisissez votre club :</p>
+  <div id="clubList"></div>
+</div>
+
+<div id="load" class="scr">
+  <button class="back" onclick="go('menu')">← Retour</button>
+  <h2 style="font-size:30px;margin-top:6px">Charger une partie</h2>
+  <div id="loadInfo"></div>
+</div>
+
+<div id="set" class="scr">
+  <button class="back" onclick="go('menu')">← Retour</button>
+  <h2 style="font-size:30px;margin-top:6px">Réglages</h2>
+  <button class="btn" onclick="wipe()">Effacer la sauvegarde<small>Supprime la carrière en cours, définitivement</small></button>
+  <p class="meta">La sauvegarde reste sur cet appareil. Aucune connexion n'est nécessaire.</p>
+</div>
+
+<div id="game" class="scr">
+  <div class="hd"><button class="back" onclick="go('menu')">← Menu</button><span class="meta" id="gHead"></span></div>
+  <div class="tabs" role="tablist">
+    <button data-t="acc" onclick="tab('acc')">Accueil</button>
+    <button data-t="eff" onclick="tab('eff')">Effectif</button>
+    <button data-t="cla" onclick="tab('cla')">Classement</button>
+    <button data-t="tra" onclick="tab('tra')">Transferts</button>
+  </div>
+  <div id="content"></div>
+  <div class="ad"><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="2222222222" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script></div>
+</div>
+
+<script>
+// Données de départ. Les effectifs sont des noms réels ; les notes sont générées pour le jeu.
+// Modifie ces listes pour mettre à jour clubs et joueurs.
+const DATA=[
+{n:"Real Madrid",b:84,p:["Courtois","Carvajal","Rüdiger","Alaba","Valverde","Camavinga","Bellingham","Vinícius Júnior"]},
+{n:"FC Barcelone",b:83,p:["Ter Stegen","Koundé","Araújo","Cubarsí","Pedri","Frenkie de Jong","Raphinha","Lamine Yamal"]},
+{n:"Atlético de Madrid",b:80,p:["Oblak","Witsel","Giménez","Hermoso","Koke","Llorente","Lemar","Griezmann"]},
+{n:"Séville FC",b:74,p:["Bounou","Acuña","Badé","Kike Salas","Gudelj","Rakitić","Ocampos","En-Nesyri"]},
+{n:"Real Sociedad",b:75,p:["Remiro","Aguerd","Le Normand","Traoré","Zubimendi","Brais Méndez","Kubo","Oyarzabal"]},
+{n:"Villarreal CF",b:73,p:["Jorgensen","Foyth","Albiol","Pau Torres","Parejo","Baena","Pépé","Gerard Moreno"]}
+];
+const K=6, LG=["La Liga","Premier League","Ligue 1","Serie A","Bundesliga","Liga portugaise"];
+DATA.push(
+{n:"Manchester City",b:84,p:["Ederson","Walker","Dias","Gvardiol","Rodri","Foden","Doku","Haaland"]},
+{n:"Arsenal",b:84,p:["Raya","White","Saliba","Gabriel","Rice","Ødegaard","Saka","Gyökeres"]},
+{n:"Liverpool",b:83,p:["Alisson","Robertson","Van Dijk","Konaté","Mac Allister","Szoboszlai","Salah","Díaz"]},
+{n:"Chelsea",b:78,p:["Sánchez","James","Fofana","Colwill","Caicedo","Enzo Fernández","Palmer","Jackson"]},
+{n:"Manchester United",b:76,p:["Onana","Dalot","Martínez","Maguire","Mainoo","Bruno Fernandes","Cunha","Højlund"]},
+{n:"Tottenham",b:76,p:["Vicario","Porro","Romero","Van de Ven","Bentancur","Maddison","Son","Solanke"]},
+{n:"Paris Saint-Germain",b:84,p:["Donnarumma","Hakimi","Marquinhos","Skriniar","Vitinha","Zaïre-Emery","Dembélé","Kvaratskhelia"]},
+{n:"Olympique de Marseille",b:76,p:["Pau López","Clauss","Balerdi","Pavard","Ounahi","Greenwood","Aubameyang","Gerson"]},
+{n:"AS Monaco",b:77,p:["Köhn","Vanderson","Teze","Caio Henrique","Akliouche","Minamino","Embolo","Golovin"]},
+{n:"Olympique Lyonnais",b:74,p:["Lucas Perri","Tagliafico","Niakhaté","Tolisso","Cherki","Endrick","Mikautadze","Lacazette"]},
+{n:"Lille",b:75,p:["Chevalier","Ismaily","Fonte","Diakité","André","Angel Gomes","Bayo","Jonathan David"]},
+{n:"OGC Nice",b:73,p:["Bulka","Bard","Todibo","Dante","Thuram","Boudaoui","Gouiri","Moffi"]},
+{n:"Inter",b:84,p:["Sommer","Pavard","Bastoni","Acerbi","Barella","Calhanoglu","Dimarco","Lautaro Martínez"]},
+{n:"Napoli",b:80,p:["Meret","Di Lorenzo","Rrahmani","Buongiorno","Lobotka","McTominay","Politano","Hojlund"]},
+{n:"AC Milan",b:80,p:["Maignan","Calabria","Thiaw","Gabbia","Reijnders","Modrić","Pulisic","Leão"]},
+{n:"Juventus",b:79,p:["Di Gregorio","Gatti","Bremer","Kalulu","Locatelli","Koopmeiners","Yildiz","Vlahović"]},
+{n:"AS Roma",b:76,p:["Svilar","Celik","Ndicka","Mancini","Cristante","Pellegrini","Dybala","Soulé"]},
+{n:"Lazio",b:74,p:["Provedel","Lazzari","Gila","Romagnoli","Guendouzi","Castellanos","Isaksen","Zaccagni"]},
+{n:"Bayern Munich",b:84,p:["Neuer","Davies","Upamecano","Kim Min-jae","Kimmich","Goretzka","Musiala","Kane"]},
+{n:"Borussia Dortmund",b:79,p:["Kobel","Ryerson","Schlotterbeck","Hummels","Sabitzer","Malen","Adeyemi","Guirassy"]},
+{n:"RB Leipzig",b:78,p:["Gulácsi","Raum","Orbán","Lukeba","Xavi Simons","Schlager","Openda","Šeško"]},
+{n:"Bayer Leverkusen",b:80,p:["Hradecký","Tah","Quansah","Hincapié","Xhaka","Palacios","Grimaldo","Schick"]},
+{n:"VfB Stuttgart",b:75,p:["Nübel","Vagnoman","Anton","Ito","Karazor","Undav","Demirović","Führich"]},
+{n:"Eintracht Francfort",b:73,p:["Trapp","Tuta","Koch","Buta","Larsson","Kamada","Uzun","Ekitike"]},
+{n:"Sporting CP",b:80,p:["Rui Silva","Matheus Reis","Gonçalo Inácio","Hjulmand","Morita","Pedro Gonçalves","Trincão","Luis Suárez"]},
+{n:"SL Benfica",b:79,p:["Trubin","Aursnes","Otamendi","Antonio Silva","Florentino","Kökçü","Akturkoglu","Pavlidis"]},
+{n:"FC Porto",b:78,p:["Diogo Costa","Wendell","Pepe","Bednarek","Eustáquio","Varela","Galeno","Samu"]},
+{n:"SC Braga",b:75,p:["Matheus","Victor Gomes","Ricardo Horta","Al Musrati","Banza","Zalazar","Vitor Carvalho","Abel Ruiz"]},
+{n:"Vitória SC",b:72,p:["Bruno Varela","Gilberto","Tiago Silva","Dani Silva","Mohamed Chemeli","Tiago Tomás","Vitor Ferreira","Rafa Mújica"]},
+{n:"Famalicão",b:70,p:["Kiko","Gustavo Assunção","Fabrício","Ivo Rodrigues","Rúben Pinto","Lucas Serapião","Dani Silva","Ricardo Mangas"]}
+);
+const PH=()=>["Gardien","Défenseur 1","Défenseur 2","Défenseur 3","Milieu 1","Milieu 2","Attaquant 1","Attaquant 2"];
+DATA.push(
+{n:"Real Oviedo",b:70,p:PH()},
+{n:"Racing de Santander",b:68,p:PH()},
+{n:"Real Valladolid",b:68,p:PH()},
+{n:"RCD Espanyol",b:69,p:PH()},
+{n:"Levante UD",b:69,p:PH()},
+{n:"Deportivo de La Coruña",b:67,p:PH()},
+{n:"West Ham United",b:70,p:PH()},
+{n:"Burnley",b:67,p:PH()},
+{n:"Wolverhampton Wanderers",b:67,p:PH()},
+{n:"Cardiff City",b:66,p:PH()},
+{n:"Bolton Wanderers",b:65,p:PH()},
+{n:"Lincoln City",b:64,p:PH()},
+{n:"AJ Auxerre",b:68,p:PH()},
+{n:"Le Havre AC",b:67,p:PH()},
+{n:"Paris FC",b:67,p:PH()},
+{n:"FC Nantes",b:69,p:PH()},
+{n:"Angers SCO",b:66,p:PH()},
+{n:"SM Caen",b:65,p:PH()},
+{n:"Sampdoria",b:68,p:PH()},
+{n:"US Palermo",b:67,p:PH()},
+{n:"SSC Bari",b:66,p:PH()},
+{n:"Frosinone",b:67,p:PH()},
+{n:"Cesena",b:65,p:PH()},
+{n:"Modena",b:66,p:PH()},
+{n:"Hamburger SV",b:68,p:PH()},
+{n:"1. FC Köln",b:68,p:PH()},
+{n:"Hertha BSC",b:67,p:PH()},
+{n:"FC Schalke 04",b:66,p:PH()},
+{n:"Hannover 96",b:66,p:PH()},
+{n:"1. FC Nürnberg",b:65,p:PH()},
+{n:"Gil Vicente",b:66,p:PH()},
+{n:"Estoril Praia",b:65,p:PH()},
+{n:"Arouca",b:65,p:PH()},
+{n:"Moreirense",b:64,p:PH()},
+{n:"Casa Pia",b:66,p:PH()},
+{n:"Santa Clara",b:64,p:PH()}
+);
+const GN=LG.concat(LG.map(x=>x+" · Division 2"));
+function allFx(r){const out=[];for(let l=0;l<GN.length;l++)G.fx[r].forEach(([x,y])=>out.push([x+l*K,y+l*K]));return out;}
+const lgOf=i=>Math.floor(i/K);
+const TAC={off:"Offensif",eq:"Équilibré",def:"Défensif"};
+const ATT={off:1.2,eq:1,def:.85}, CON={off:1.1,eq:1,def:.9};
+const TACS=["off","eq","def"];
+const $=id=>document.getElementById(id);
+const POS=i=>i==0?"GB":i<4?"DEF":i<6?"MIL":"ATT";
+const table=(l=lgOf(G.ci))=>G.clubs.slice(l*K,l*K+K).sort((a,b)=>b.pts-a.pts||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf);
+const strength=c=>c.p.reduce((s,p)=>s+p.r,0)/c.p.length;
+let G=null, TAB="acc", NOTE="";
+
+// Calendrier aller-retour (méthode du cercle)
+function fixtures(n){
+  const a=[...Array(n).keys()],r=[];
+  for(let k=0;k<n-1;k++){
+    const pr=[];
+    for(let i=0;i<n/2;i++){const x=a[i],y=a[n-1-i];pr.push(k%2&&i===0?[y,x]:[x,y]);}
+    r.push(pr); a.splice(1,0,a.pop());
+  }
+  return r.concat(r.map(rd=>rd.map(([x,y])=>[y,x])));
+}
+function pois(l){let L=Math.exp(-l),k=0,p=1;do{k++;p*=Math.random();}while(p>L);return k-1;}
+function match(a,b){
+  const k=(strength(a)/strength(b))**2;
+  return [pois(1.3*k*ATT[a.tac]*CON[b.tac]), pois(1.3/k*ATT[b.tac]*CON[a.tac])];
+}
+
+function save(){try{localStorage.setItem("clubtycoon",JSON.stringify(G));}catch(e){}}
+function load(){try{return JSON.parse(localStorage.getItem("clubtycoon"));}catch(e){return null;}}
+
+function start(mgr,ci){
+  G={mgr,ci,season:1,round:0,money:50,trophies:0,last:null,done:false,fx:fixtures(K),
+    clubs:DATA.map((d,i)=>({n:d.n,tac:i===ci?"eq":TACS[Math.random()*3|0],pts:0,w:0,d:0,l:0,gf:0,ga:0,
+      p:d.p.map((nm,j)=>({n:nm,pos:POS(j),r:d.b+((j*5+nm.length*3)%9)-4}))}))};
+  NOTE=""; save(); go("game");
+}
+
+function playRound(){
+  if(G.round>=G.fx.length)return;
+  let mine=null;
+  allFx(G.round).forEach(([x,y])=>{
+    const A=G.clubs[x],B=G.clubs[y],[ga,gb]=match(A,B);
+    A.gf+=ga;A.ga+=gb;B.gf+=gb;B.ga+=ga;
+    if(ga>gb){A.w++;A.pts+=3;B.l++}else if(gb>ga){B.w++;B.pts+=3;A.l++}else{A.d++;B.d++;A.pts++;B.pts++}
+    if(x===G.ci||y===G.ci){
+      const me=x===G.ci, g=me?ga:gb, o=me?gb:ga;
+      mine={opp:(me?B:A).n,g,o};
+      G.money+=g>o?10:g===o?4:0;
+    }
+  });
+  G.money+=2; G.round++; G.last=mine; NOTE="";
+  if(G.round===G.fx.length){
+    G.done=true;
+    if(table()[0]===G.clubs[G.ci]) G.trophies++;
+  }
+  save(); render();
+}
+
+function promote(){
+  const ref=G.clubs[G.ci];
+  for(let g=0;g<LG.length;g++){
+    const t1=table(g), t2=table(g+LG.length);
+    for(let k=0;k<2;k++){
+      const down=t1[K-1-k], up=t2[k];
+      const ia=G.clubs.indexOf(down), ib=G.clubs.indexOf(up);
+      G.clubs[ia]=up; G.clubs[ib]=down;
+    }
+  }
+  G.ci=G.clubs.indexOf(ref);
+}
+function nextSeason(){
+  const g0=lgOf(G.ci); promote(); const g1=lgOf(G.ci);
+  NOTE=g1<g0?"Votre club monte en division 1 !":g1>g0?"Votre club est relégué en division 2.":"Votre club reste dans sa division.";
+  G.season++; G.round=0; G.last=null; G.done=false;
+  G.clubs.forEach(c=>{
+    c.pts=c.w=c.d=c.l=c.gf=c.ga=0;
+    c.p.forEach(p=>{p.r=Math.min(99,Math.max(50,p.r+(Math.random()*5|0)-2));});
+  });
+  save(); render();
+}
+
+function price(p){return Math.max(1,Math.round((p.r-60)/2));}
+function buy(ci,pi){
+  const me=G.clubs[G.ci],src=G.clubs[ci],p=src.p[pi];
+  if(src.p.length<=5){NOTE=src.n+" ne peut pas vendre : effectif trop petit.";render();return;}
+  const cost=price(p);
+  if(G.money<cost){NOTE="Budget insuffisant : "+p.n+" coûte "+cost+" M€.";render();return;}
+  G.money-=cost; src.p.splice(pi,1); me.p.push(p);
+  NOTE=p.n+" rejoint "+me.n+" pour "+cost+" M€.";
+  save(); render();
+}
+function sell(pi){
+  const me=G.clubs[G.ci];
+  if(me.p.length<=5){NOTE="Effectif trop petit pour vendre.";render();return;}
+  const p=me.p.splice(pi,1)[0];
+  const others=G.clubs.map((c,i)=>i).filter(i=>i!==G.ci);
+  const ti=others[Math.random()*others.length|0];
+  const gain=Math.round(price(p)*.8);
+  G.clubs[ti].p.push(p); G.money+=gain;
+  NOTE=p.n+" est vendu à "+G.clubs[ti].n+" pour "+gain+" M€.";
+  save(); render();
+}
+function train(){
+  const c=G.clubs[G.ci];
+  if(G.money<5){NOTE="Budget insuffisant : il faut 5 M€.";render();return;}
+  G.money-=5;
+  const p=c.p[Math.random()*c.p.length|0];
+  p.r=Math.min(99,p.r+1);
+  NOTE=p.n+" progresse et passe à "+p.r+".";
+  save(); render();
+}
+
+function setTac(t){G.clubs[G.ci].tac=t;NOTE="Tactique : "+TAC[t]+".";save();render();}
+
+function render(){
+  if(!G)return;
+  const me=G.clubs[G.ci];
+  $("gHead").textContent=me.n+" · "+GN[lgOf(G.ci)]+" · Saison "+G.season;
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===TAB));
+  let h="";
+  if(TAB==="acc"){
+    const f=G.fx[G.round];
+    const m=f&&f.find(([x,y])=>x===G.ci||y===G.ci);
+    h+=`<div class="card"><h3>Gérant : ${G.mgr}</h3>
+      <div class="row"><span>Journée</span><b>${Math.min(G.round+1,G.fx.length)} / ${G.fx.length}</b></div>
+      <div class="row"><span>Budget</span><b>${G.money} M€</b></div></div>`;
+    if(!G.done){
+      const opp=m?G.clubs[m[0]===G.ci?m[1]:m[0]].n:"";
+      h+=`<div class="card"><h3>Prochain match</h3><p style="margin:0 0 12px">${me.n} contre ${opp}</p>
+        <button class="btn g" onclick="playRound()">Jouer la journée<small>Tous les matchs de la journée sont joués</small></button></div>`;
+    }else{
+      h+=`<div class="card"><h3>Saison terminée</h3><p style="margin:0 0 12px">Champion : <b>${table()[0].n}</b></p>
+        <button class="btn g" onclick="nextSeason()">Nouvelle saison</button></div>`;
+    }
+    if(G.last){
+      const L=G.last, r=L.g>L.o?"Victoire":L.g===L.o?"Match nul":"Défaite";
+      h+=`<div class="card"><h3>Dernier match : ${r}</h3><p style="margin:0;font-size:20px;text-align:center"><b>${me.n} ${L.g} - ${L.o} ${L.opp}</b></p></div>`;
+    }
+    h+=`<div class="card"><h3>Tactique</h3><div class="tabs">${TACS.map(k=>
+      `<button class="${me.tac===k?"on":""}" onclick="setTac('${k}')">${TAC[k]}</button>`).join("")}</div></div>`;
+    h+=`<button class="btn" onclick="train()">Entraînement<small>Coûte 5 M€ · améliore un joueur au hasard</small></button>`;
+    h+=`<div class="note">${NOTE}</div>`;
+  }else if(TAB==="eff"){
+    h+=`<div class="card"><h3>Effectif</h3>${me.p.map((p,j)=>
+      `<div class="row"><span><span class="pos">${p.pos||POS(j)}</span>${p.n}</span><b>${p.r}</b></div>`).join("")}</div>`;
+    h+=`<p class="meta" style="text-align:center">Force moyenne : ${strength(me).toFixed(1)}</p>`;
+  }else if(TAB==="tra"){
+    const mk=[];
+    G.clubs.forEach((c,ci)=>{if(ci!==G.ci)c.p.forEach((p,pi)=>mk.push({c,ci,p,pi}));});
+    mk.sort((a,b)=>b.p.r-a.p.r);mk.length=Math.min(mk.length,40);
+    h+=`<div class="card"><h3>Marché</h3><p class="meta" style="margin:0">Budget : ${G.money} M€ · Prix d'achat : (note − 60) ÷ 2 M€, revente à 80 %</p></div>`;
+    h+=`<div class="card"><h3>Acheter</h3>${mk.map(({c,ci,p,pi})=>`<div class="row"><span><span class="pos">${p.pos||""}</span>${p.n}<br><span class="meta">${c.n}</span></span><span style="display:flex;gap:8px;align-items:center"><b>${p.r}</b><button class="mini" onclick="buy(${ci},${pi})">${price(p)} M€</button></span></div>`).join("")}</div>`;
+    h+=`<div class="card"><h3>Vendre</h3>${me.p.map((p,pi)=>`<div class="row"><span><span class="pos">${p.pos||""}</span>${p.n}</span><span style="display:flex;gap:8px;align-items:center"><b>${p.r}</b><button class="mini" onclick="sell(${pi})">+${Math.round(price(p)*.8)} M€</button></span></div>`).join("")}</div>`;
+    h+=`<div class="note">${NOTE}</div>`;
+  }else{
+    h+=`<div class="card"><h3>${GN[lgOf(G.ci)]}</h3><table><tr><th>#</th><th class="l">Club</th><th>Pts</th><th>J</th><th>G</th><th>N</th><th>P</th><th>Diff</th></tr>${
+      table().map((c,i)=>`<tr class="${c===me?"me":""}"><td>${i+1}</td><td class="l">${c.n}</td><td>${c.pts}</td>
+      <td>${c.w+c.d+c.l}</td><td>${c.w}</td><td>${c.d}</td><td>${c.l}</td><td>${c.gf-c.ga}</td></tr>`).join("")
+    }</table></div>`;
+  }
+  $("content").innerHTML=h;
+}
+
+function tab(t){TAB=t;NOTE="";render();}
+
+function go(id){
+  if(id==="game"&&!G)return;
+  document.querySelectorAll(".scr").forEach(s=>s.classList.remove("on"));
+  $(id).classList.add("on");
+  if(id==="menu")menu();
+  if(id==="new"){$("clubList").innerHTML=GN.map((ln,l)=>`<p class="meta" style="margin:16px 0 0">${ln}</p>`+DATA.slice(l*K,l*K+K).map((d,j)=>`<button class="btn" onclick="pick(${l*K+j})">${d.n}<small>Niveau ${d.b}</small></button>`).join("")).join("");}
+  if(id==="load"){$("loadInfo").innerHTML=G?`<div class="card"><h3>${G.clubs[G.ci].n}</h3>
+    <div class="row"><span>Gérant</span><b>${G.mgr}</b></div>
+    <div class="row"><span>Saison</span><b>${G.season}</b></div>
+    <div class="row"><span>Journée</span><b>${Math.min(G.round+1,G.fx.length)} / ${G.fx.length}</b></div></div>
+    <button class="btn g" onclick="go('game')">Charger la partie</button>`:'<p class="meta">Aucune sauvegarde trouvée.</p>';}
+  if(id==="game"){TAB="acc";NOTE="";render();}
+  scrollTo(0,0);
+}
+
+function menu(){
+  const has=!!G;
+  $("bCont").disabled=!has;
+  $("contSub").textContent=has?G.clubs[G.ci].n+" · Saison "+G.season:"Aucune carrière en cours";
+  $("prof").innerHTML=has?`<div class="row"><b>${G.mgr}</b><span>${G.clubs[G.ci].n}</span></div>
+    <div class="row"><span>Saisons</span><span>${G.season}</span></div>
+    <div class="row"><span>Trophées</span><span>${G.trophies}</span></div>`
+    :`<p class="meta" style="margin:0">Créez une carrière pour commencer.</p>`;
+}
+
+function cont(){if(G)go("game");}
+function quick(){
+  if(G&&!confirm("Remplacer la carrière en cours ?"))return;
+  start("Manager",Math.random()*DATA.length|0);
+}
+function pick(i){
+  if(G&&!confirm("Remplacer la carrière en cours ?"))return;
+  start($("mgr").value.trim()||"Manager",i);
+}
+function wipe(){
+  if(!confirm("Effacer la carrière ?"))return;
+  G=null;
+  try{localStorage.removeItem("clubtycoon");}catch(e){}
+  go("menu");
+}
+
+G=load();
+if(G&&G.clubs.length<DATA.length){G.clubs=G.clubs.concat(DATA.slice(G.clubs.length).map(d=>({n:d.n,tac:TACS[Math.random()*3|0],pts:0,w:0,d:0,l:0,gf:0,ga:0,p:d.p.map((nm,j)=>({n:nm,pos:POS(j),r:d.b+((j*5+nm.length*3)%9)-4}))})));save();}
+menu();
+</script>
+</body>
+</html>
